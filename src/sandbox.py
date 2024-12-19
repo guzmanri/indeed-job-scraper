@@ -1,6 +1,6 @@
-from src.scraper import *
+from src.scrapers.scraper import *
 
-from src.utils.setup_logger import *
+from src.logging_config.setup_logger import *
 from src.databases.temp_db import insert_temp_job_data
 setup_logger()
 
