@@ -1,12 +1,18 @@
+from logging import getLogger, Logger
+
 from logging_config.setup_logger import setup_logger
 from scrapers.cli import get_args
-from src.scrapers.scraper import setup_scraper
+from scrapers.scraper import setup_scraper
+from scrapers.country_scraper import check_country_is_supported
+from scrapers.country_scraper import CountryNotSupportedError
 
 
 def main():
     setup_logger()
-    args: dict[str, str] = get_args()  # Add error handling
-    setup_scraper()
+    logger: Logger = getLogger()
+    args: dict[str, str] = get_args()  # TODO: Add error handling
+    check_country_is_supported(args['country'])
+    print('Passed')
 
 
 

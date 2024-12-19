@@ -1,7 +1,6 @@
 import argparse
 from argparse import ArgumentParser
 
-
 def get_args() -> dict[str, str]:
     parser: ArgumentParser = argparse.ArgumentParser()
 
@@ -34,4 +33,4 @@ def get_args() -> dict[str, str]:
     )
 
     args: argparse.Namespace = parser.parse_args()
-    return {arg: getattr(args, arg).lower().stip() for arg in vars(args)}
+    return {arg: getattr(args, arg).title().strip() for arg in vars(args)}
