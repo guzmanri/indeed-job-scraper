@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup, ResultSet, Tag
 
-from scraper import timer, scrape_html
+from scraper import scrape_html, timed
 
-@timer
+@timed
 def scrape_job_pages(num_pages: int, base_url: str) -> dict[int, str]:
     pages_html: dict[int, str] = {}
     for start in range(0, num_pages * 10, 10):

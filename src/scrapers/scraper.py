@@ -5,11 +5,9 @@ from typing import Any
 import pyautogui
 import pyperclip
 
-from bs4 import BeautifulSoup, ResultSet, Tag
-
 logger: Logger = getLogger()
 
-def timer(func):
+def timed(func):
     def wrapper(*args, **kwargs):
         start: float = time.time()
         result: Any = func(*args, **kwargs)  # Type depends on func
@@ -18,7 +16,7 @@ def timer(func):
         return result
     return wrapper
 
-@timer
+@timed
 def setup_scraper() -> None:
     """
     Assert FireFox is already running.
@@ -37,6 +35,7 @@ def setup_scraper() -> None:
 
     time.sleep(1)
 
+@timed  # TODO: Refactor
 def copy_paste() -> str:
     raw_html: str = ' Cloudflare Pages Analytics '
     while ' Cloudflare Pages Analytics ' in raw_html:
@@ -46,7 +45,7 @@ def copy_paste() -> str:
 
         pyautogui.hotkey('command', 'a')
         pyautogui.hotkey('command', 'c')
-        raw_html: str = str(pyperclip.paste())
+        raw_html = str(pyperclip.paste())
 
         if ' Cloudflare Pages Analytics ' in raw_html:
             print('cloudflare blocked')
@@ -57,7 +56,7 @@ def copy_paste() -> str:
 
     return raw_html
 
-@timer
+@timed
 def scrape_html(url: str) -> str:
     """
     Assert FireFox browser is opened and focused.
@@ -77,6 +76,3 @@ def scrape_html(url: str) -> str:
         pyautogui.hotkey('command', 'w')
 
     return raw_html
-
-
-
