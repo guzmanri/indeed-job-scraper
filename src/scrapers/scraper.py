@@ -80,23 +80,3 @@ def scrape_html(url: str) -> str:
 
 
 
-def extract_country_elements(html_soup: BeautifulSoup) -> ResultSet:
-    return html_soup.find_all('li', class_='worldwide__country')
-
-def extract_country_info(country_element: Tag) -> tuple[str, str]:
-    country_name: str = country_element.find('span', class_='worldwide__name').text
-    country_code: str = country_element.find('a')['data-country-code']
-    return country_name, country_code
-
-def get_supported_regions() -> dict[tuple[str, str], str]:
-    setup_scraper()
-    raw_html: str = scrape_html('https://www.indeed.com/worldwide')
-    html_soup: BeautifulSoup = BeautifulSoup(raw_html, 'html.parser')
-    country_elements: ResultSet = extract_country_elements(html_soup)
-
-    supported_regions: dict[tuple[str, str], str] = {}
-    for country_element in country_elements:
-        country_info: tuple[str, str] = extract_country_info(country_element)
-        supported_regions[country_info] = country_info[1]
-
-    return supported_regions
