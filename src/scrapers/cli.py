@@ -1,13 +1,19 @@
 import argparse
 from argparse import ArgumentParser
 from logging import getLogger, Logger
-from typing import Union
 
-from country_scraper import _check_country_is_supported
+from dataclasses import dataclass
 
 logger: Logger = getLogger()
 
-def get_args() -> dict[str, str]:
+@dataclass
+class JobArgs:
+    job_title: str
+    country: str
+    city: str
+    max_pages: int
+
+def get_args() -> JobArgs:
     parser: ArgumentParser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -38,18 +44,20 @@ def get_args() -> dict[str, str]:
         help='The maximum number of pages to search. Defaults to "10".'
     )
 
-    raw_args: argparse.Namespace = parser.parse_args()
-    args: dict[str, Union[str, int]] = {arg: getattr(raw_args, arg).title().strip() for arg in vars(raw_args)}
-    _verify_args(args)
-    return args
+    args: argparse.Namespace = parser.parse_args()
 
-def _check_max_pages_is_valid(max_pages: str) -> None:
-    if not max_pages.isdigit() or '-' in max_pages:
-        error_message = f'Invalid max-pages: {max_pages}. Max-pages must be a positive integer.'
-        logger.info(error_message)
+    try:
+        max_pages = int(args.max_pages)  # Truncates decimal automatically
+        if max_pages < 1:
+            raise ValueError
+    except ValueError as e:
+        error_message: str = f'--max-pages must be a positive integer: {e}'
+        logger.warning(error_message)
         raise ValueError(error_message)
 
-def _verify_args(args: dict[str, Union[str, int]]) -> None:
-    _check_country_is_supported(args['country'])
-    _check_max_pages_is_valid(args['max_pages'])
-    args['max_pages'] = int(args['max_pages'])
+    return JobArgs(
+        job_title=args.job_title,
+        country=args.country,
+        city=args.city,
+        max_pages=max_pages
+    )

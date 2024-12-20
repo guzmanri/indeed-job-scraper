@@ -1,13 +1,13 @@
 from logging import Logger, getLogger
 import time
-from typing import Any
+from typing import Any, Callable
 
 import pyautogui
 import pyperclip
 
 logger: Logger = getLogger()
 
-def timed(func):
+def _timed(func: Callable[..., Any]) -> Callable[..., Any]:
     def wrapper(*args, **kwargs):
         start: float = time.time()
         result: Any = func(*args, **kwargs)  # Type depends on func
@@ -16,10 +16,10 @@ def timed(func):
         return result
     return wrapper
 
-@timed
-def setup_scraper() -> None:
+@_timed
+def _setup_scraper() -> None:
     """
-    Assert FireFox is already running.
+    Assert FireFox browser is installed and running.
     :return:
     """
     pyautogui.keyDown('command')
@@ -35,8 +35,29 @@ def setup_scraper() -> None:
 
     time.sleep(1)
 
-@timed  # TODO: Refactor
-def copy_paste() -> str:
+@_timed
+def _scrape_html(url: str) -> str:
+    """
+    Assert FireFox browser is opened and focused.
+    :param url:
+    :return:
+    """
+    pyautogui.hotkey('command', 't')
+    pyperclip.copy(url)
+    pyautogui.hotkey('command', 'v')
+    pyautogui.hotkey('enter')
+
+    time.sleep(1)
+
+    raw_html: str = _copy_paste()
+
+    for _ in range(2):
+        pyautogui.hotkey('command', 'w')
+
+    return raw_html
+
+@_timed
+def _copy_paste() -> str:
     raw_html: str = ' Cloudflare Pages Analytics '
     while ' Cloudflare Pages Analytics ' in raw_html:
         pyautogui.hotkey('command', 'u')
@@ -52,27 +73,7 @@ def copy_paste() -> str:
             pyautogui.hotkey('command', 'w')
             pyautogui.moveTo(500, 200)
             pyautogui.click()
+
             time.sleep(2)
-
-    return raw_html
-
-@timed
-def scrape_html(url: str) -> str:
-    """
-    Assert FireFox browser is opened and focused.
-    :param url:
-    :return:
-    """
-    pyautogui.hotkey('command', 't')
-    pyperclip.copy(url)
-    pyautogui.hotkey('command', 'v')
-    pyautogui.hotkey('enter')
-
-    time.sleep(1)
-
-    raw_html: str = copy_paste()
-
-    for _ in range(2):
-        pyautogui.hotkey('command', 'w')
 
     return raw_html

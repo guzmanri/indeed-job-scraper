@@ -1,8 +1,10 @@
-from cli import get_args
-from country_scraper import update_supported_countries_json
+from .cli import JobArgs, get_args
+from .job_scraper import Job, get_base_url, scrape_job_pages
 
 __all__ = [
+    'JobArgs',
     'get_args',
-    'update_supported_countries_json',
-    '',
+    'Job',
+    'get_base_url',
+    'scrape_job_pages',
 ]
